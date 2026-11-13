@@ -2,9 +2,11 @@
 # Picks come from `omp bench` on 2026-11-04 (2 runs each, small sample; Cursor runs carried 12-20K input tokens vs ~100 for Copilot).
 # Overlay on top of ~/.omp/agent/config.yml: modelRoles deep-merges, other keys replace.
 modelRoles:
-  # Cursor's own coding model, fast mode: ~175-265 tok/s, ~1.2s TTFT, ~$0.02/run in bench
-  default: cursor/composer-2.5-fast:low
-  plan: cursor/composer-2.5-fast:medium
+  # Cursor's own coding model (standard tier). omp bench 2026-11-13, 6 runs, 12K input:
+  # composer-2.5 :low 1.9s TTFT / 130 tok/s / $0.0066 per run vs composer-2.5-fast :low 2.0s (p95 7.0s) / 130 tok/s / $0.033;
+  # :medium 1.9s / 148 tok/s / $0.0063 vs 2.1s / 136 tok/s / $0.032. The -fast tier was not faster here and costs ~5x.
+  default: cursor/composer-2.5:low
+  plan: cursor/composer-2.5:medium
   # lowest TTFT measured (0.7s), cheapest
   smol: github-copilot/claude-haiku-5.5:low
   fast: github-copilot/claude-haiku-5.5:low
@@ -27,6 +29,6 @@ prewalk:
 # Maps deep-merge: only these three chains replace the global ones.
 retry:
   fallbackChains:
-    default: [github-copilot/claude-sonnet-5.5:low]     # bench: ~75 tok/s, 1.1 s TTFT
+    default: [github-copilot/claude-sonnet-5.5:low]     # bench 2026-11-13: 1.2s TTFT / 163 tok/s; gemini-4-hydrogen :low 1.5s / 124 tok/s
     plan: [github-copilot/claude-sonnet-5.5:medium]
     slow: [github-copilot/claude-opus-5.5:medium]       # bench: ~70 tok/s, 0.8 s TTFT
