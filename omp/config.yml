@@ -46,7 +46,6 @@ retry:
     tiny: []
     web:
       - web/perplexity
-      - anthropic/claude-haiku-4-5
       - openai-codex/gpt-5.6-luna
       - xai/grok-4.5
       - web/zai
@@ -100,3 +99,4 @@ disabledProviders:
   - opencode-zen
   - opencode-go
   - google-antigravity
+  - anthropic
