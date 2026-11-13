@@ -14,6 +14,8 @@ manifest_entries() {
 }
 
 # rsync <src> <dst> [extra rsync flags].
+# Compares by checksum (-c), not size and mtime: git checkouts and pulls rewrite mtimes,
+# which would otherwise show as drift in omp-status and omp-restore previews.
 # Directory entries (trailing /) mirror contents, including deletions.
 # File entries sync into dst's parent directory: macOS openrsync reports a phantom
 # transfer for every file-to-file-path copy, so both sides must share a basename.
@@ -21,11 +23,11 @@ mirror() {
   local src="$1" dst="$2"
   shift 2
   case "$src" in
-    */) rsync -a --delete --exclude-from="$EXCLUDE" "$@" "$src" "$dst" ;;
+    */) rsync -ac --delete --exclude-from="$EXCLUDE" "$@" "$src" "$dst" ;;
     *)
       [ "$(basename "$src")" = "$(basename "$dst")" ] || {
         echo "manifest.txt: $src and $dst must have the same file name" >&2; return 1; }
-      rsync -a --exclude-from="$EXCLUDE" "$@" "$src" "$(dirname "$dst")/" ;;
+      rsync -ac --exclude-from="$EXCLUDE" "$@" "$src" "$(dirname "$dst")/" ;;
   esac
 }
 
