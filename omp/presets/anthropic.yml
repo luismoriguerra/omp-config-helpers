@@ -1,21 +1,28 @@
-# Anthropic / Claude-only coding preset: balanced between fast and smart.
+# Anthropic / Claude-only coding preset: smart and balanced.
 # Claude models only, served through the allowed providers (GitHub Copilot primary, Cursor fallback).
-# Sonnet codes the whole session (no prewalk handoff), Opus plans and reviews, Haiku does utility work.
+# Sonnet codes the whole session (no prewalk handoff), Fable 5.2 plans and reviews, Opus advises, Haiku does utility work.
+# Fable 5.2 requires Anthropic data retention for its safety classifiers (no zero data retention by default; GitHub changelog 2026-11-09).
 # Overlay on top of ~/.omp/agent/config.yml: modelRoles and fallbackChains deep-merge, other keys replace.
 modelRoles:
   default: github-copilot/claude-sonnet-5.5-1m:medium
-  plan: github-copilot/claude-opus-5.5-1m:high
-  slow: github-copilot/claude-opus-5.5-1m:high
+  # Fable 5.2: Anthropic's strongest coding model (FrontierCode 2.0 at xhigh 49.1% vs Opus 5.5 45.5%; Anthropic, 2026-11-09).
+  # Copilot: 1M context, 128K output, 8/40 per 1M. omp bench 2026-11-13: fable-5.2 :high 1.9s TTFT / 112 tok/s / $0.133 per run,
+  # opus-5.5-1m :high 0.8s / 123 tok/s / $0.106. Planning and review are short, quality-bound turns, so the slower start is acceptable.
+  plan: github-copilot/claude-fable-5.2:high
+  slow: github-copilot/claude-fable-5.2:high
   smol: github-copilot/claude-haiku-5.5:low
   fast: github-copilot/claude-haiku-5.5:low
   vision: github-copilot/claude-sonnet-5.5-1m:low
   task: github-copilot/claude-sonnet-5.5-1m:medium
   designer: github-copilot/claude-sonnet-5.5-1m:medium
   # global uses GPT for these; Claude-only here
-  code-review: github-copilot/claude-opus-5.5-1m:high
+  code-review: github-copilot/claude-fable-5.2:high
   pr-fixes: "@default"
-  # different model (Opus) from the Sonnet main agent; same family, so less independent than a GPT reviewer
+  # different model (Opus) from the Sonnet main agent and the Fable planner; it runs every turn, so the cheaper Opus stays here.
+  # Same family, so less independent than a GPT reviewer.
   advisor: github-copilot/claude-opus-5.5-1m:medium
+  # global pins tiny to local/falcon-h1-90m (not Claude); Claude-only here
+  tiny: github-copilot/claude-haiku-5.5:low
 
 defaultThinkingLevel: medium
 
@@ -32,6 +39,7 @@ prewalk:
   enabled: false
 
 # Same-class Claude fallbacks on Cursor; only these keys replace the global chains.
+# Cursor has no Fable model (2026-11-13), so the Fable roles fall back to Opus 5.5.
 retry:
   fallbackChains:
     default: [cursor/claude-sonnet-5-5-1m:medium]
@@ -43,3 +51,4 @@ retry:
     pr-fixes: [cursor/claude-sonnet-5-5-1m:medium]
     advisor: [cursor/claude-opus-5-5-1m:medium]
     designer: [cursor/claude-sonnet-5-5-1m:medium]
+    tiny: [cursor/claude-haiku-5-5:low]
