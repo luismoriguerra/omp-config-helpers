@@ -1,0 +1,4 @@
+# Default gitleaks rules. Reviewed false positives go in .gitleaksignore by fingerprint,
+# so one approved match never hides a different secret in the same file.
+[extend]
+useDefault = true

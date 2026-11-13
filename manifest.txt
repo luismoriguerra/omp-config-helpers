@@ -1,0 +1,12 @@
+# What omp-sync copies into this repo and omp-restore copies back.
+# Format: <live path> <repo path>   (whitespace separated, ~ = $HOME)
+# A trailing / on both sides mirrors a directory, including deletions.
+# A single file must keep the same file name on both sides.
+# Files matching rsync-exclude.txt are never copied or deleted.
+
+~/.omp/agent/config.yml               omp/config.yml
+~/.omp/presets/                       omp/presets/
+
+~/.claude/skills/omp-config-audit/    skills/omp-config-audit/
+~/.claude/skills/omp-config-readme/   skills/omp-config-readme/
+~/.claude/skills/omp-model-refresh/   skills/omp-model-refresh/

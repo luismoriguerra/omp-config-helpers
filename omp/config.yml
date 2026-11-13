@@ -1,0 +1,102 @@
+modelRoles:
+  default: github-copilot/claude-fable-5.2:medium
+  slow: github-copilot/claude-opus-5.5-1m:high
+  plan: github-copilot/claude-opus-5.5-1m:max
+  smol: github-copilot/claude-haiku-5.5:low
+  tiny: local/falcon-h1-90m
+  memory: github-copilot/claude-haiku-5.5:low
+  widget: github-copilot/claude-haiku-5.5:low
+  commit: github-copilot/claude-haiku-5.5:low
+  fast: github-copilot/claude-haiku-5.5:medium
+  advisor: github-copilot/gpt-6.1-sol:high
+  code-review: github-copilot/gpt-6-astra:max
+  pr-fixes: github-copilot/gpt-6-astra:max
+  web: google-antigravity/gemini-3.5-flash-lite
+symbolPreset: unicode
+composer:
+  shape: box
+theme:
+  dark: titanium
+  light: light
+setupVersion: 3
+defaultThinkingLevel: high
+retry:
+  usageAwareFallback: true
+  fallbackChains:
+    default:
+      - cursor/claude-sonnet-5-5-1m:high
+    slow:
+      - cursor/claude-opus-5-5-1m:high
+    plan:
+      - cursor/claude-opus-5-5-1m:high
+    advisor:
+      - cursor/claude-opus-5-5-1m:medium
+    smol:
+      - cursor/claude-haiku-5-5:low
+    fast:
+      - cursor/claude-haiku-5-5:low
+    commit:
+      - cursor/claude-haiku-5-5:low
+    memory:
+      - cursor/claude-haiku-5-5:low
+    widget:
+      - cursor/claude-haiku-5-5:low
+    code-review: []
+    pr-fixes: []
+    tiny: []
+    web:
+      - web/perplexity
+      - anthropic/claude-haiku-4-5
+      - openai-codex/gpt-5.6-luna
+      - xai/grok-4.5
+      - web/zai
+      - web/exa
+      - web/tinyfish
+      - web/jina
+      - web/kagi
+      - web/tavily
+      - web/firecrawl
+      - web/brave
+      - web/kimi
+      - web/parallel
+      - web/synthetic
+      - web/searxng
+      - web/startpage
+      - web/duckduckgo
+      - web/ecosia
+      - web/google
+      - web/mojeek
+      - web/public
+      - google-antigravity/gemini-2.5-flash
+      - openai-codex/gpt-5.6-sol
+      - xai-oauth/grok-4.5
+      - web/ollama
+advisor:
+  enabled: true
+  syncBacklog: "off"
+prewalk:
+  enabled: false
+extendedContext: true
+cycleOrder:
+  - smol
+  - default
+  - slow
+dev:
+  autoqaConsent: granted
+github:
+  enabled: true
+generate_image:
+  enabled: true
+computer:
+  enabled: true
+checkpoint:
+  enabled: true
+display:
+  hideToolActivity: false
+hideThinkingBlock: true
+update:
+  auto: true
+disabledProviders:
+  - opencode-zen
+  - opencode-go
+  - google-antigravity

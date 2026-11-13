@@ -1,0 +1,45 @@
+# Anthropic / Claude-only coding preset: balanced between fast and smart.
+# Claude models only, served through the allowed providers (GitHub Copilot primary, Cursor fallback).
+# Sonnet codes the whole session (no prewalk handoff), Opus plans and reviews, Haiku does utility work.
+# Overlay on top of ~/.omp/agent/config.yml: modelRoles and fallbackChains deep-merge, other keys replace.
+modelRoles:
+  default: github-copilot/claude-sonnet-5.5-1m:medium
+  plan: github-copilot/claude-opus-5.5-1m:high
+  slow: github-copilot/claude-opus-5.5-1m:high
+  smol: github-copilot/claude-haiku-5.5:low
+  fast: github-copilot/claude-haiku-5.5:low
+  vision: github-copilot/claude-sonnet-5.5-1m:low
+  task: github-copilot/claude-sonnet-5.5-1m:medium
+  designer: github-copilot/claude-sonnet-5.5-1m:medium
+  # global uses GPT for these; Claude-only here
+  code-review: github-copilot/claude-opus-5.5-1m:high
+  pr-fixes: "@default"
+  # different model (Opus) from the Sonnet main agent; same family, so less independent than a GPT reviewer
+  advisor: github-copilot/claude-opus-5.5-1m:medium
+
+defaultThinkingLevel: medium
+
+# No Claude model generates images; the inherited image role resolves to Google, so turn it off here.
+generate_image:
+  enabled: false
+
+advisor:
+  enabled: true
+  syncBacklog: "off"
+
+# Sonnet keeps coding after the first edit (no Haiku handoff)
+prewalk:
+  enabled: false
+
+# Same-class Claude fallbacks on Cursor; only these keys replace the global chains.
+retry:
+  fallbackChains:
+    default: [cursor/claude-sonnet-5-5-1m:medium]
+    plan: [cursor/claude-opus-5-5-1m:high]
+    slow: [cursor/claude-opus-5-5-1m:high]
+    vision: [cursor/claude-sonnet-5-5-1m:low]
+    task: [cursor/claude-sonnet-5-5-1m:medium]
+    code-review: [cursor/claude-opus-5-5-1m:high]
+    pr-fixes: [cursor/claude-sonnet-5-5-1m:medium]
+    advisor: [cursor/claude-opus-5-5-1m:medium]
+    designer: [cursor/claude-sonnet-5-5-1m:medium]

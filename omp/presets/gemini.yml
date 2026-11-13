@@ -1,0 +1,58 @@
+# Gemini-only coding preset: fast executor, smart planner and reviewer.
+# Gemini models only, served through the allowed providers (GitHub Copilot primary, Cursor fallback).
+# Copilot list prices (in/out per 1M, 2026-11-10): gemini-3.8-flash 0.75/3.75, gemini-4-argon 2/10.
+# Overlay on top of ~/.omp/agent/config.yml: modelRoles and fallbackChains deep-merge, other keys replace.
+modelRoles:
+  # Flash :medium decoded ~240 tok/s on Copilot vs ~90 for argon :medium (omp bench, 2026-11-10)
+  default: github-copilot/gemini-3.8-flash-1m:medium
+  plan: github-copilot/gemini-4-argon-1m:high
+  slow: github-copilot/gemini-4-argon-1m:high
+  code-review: github-copilot/gemini-4-argon-1m:high
+  pr-fixes: "@default"
+  # different model (argon) from the Flash main agent; same family, so less independent than a GPT/Claude reviewer
+  advisor: github-copilot/gemini-4-argon-1m:medium
+  vision: github-copilot/gemini-3.8-flash-1m:low
+  task: github-copilot/gemini-3.8-flash-1m:medium
+  designer: github-copilot/gemini-4-argon-1m:medium
+  # global pins these to Claude Haiku; Gemini-only here
+  smol: github-copilot/gemini-3.8-flash-1m:low
+  fast: github-copilot/gemini-3.8-flash-1m:low
+  tiny: github-copilot/gemini-3.8-flash-1m:low
+  memory: github-copilot/gemini-3.8-flash-1m:low
+  widget: github-copilot/gemini-3.8-flash-1m:low
+  commit: github-copilot/gemini-3.8-flash-1m:low
+
+defaultThinkingLevel: medium
+
+# Same as openai/anthropic: no image model in the Copilot/Cursor catalogs; the inherited image role resolves outside them.
+generate_image:
+  enabled: false
+
+# argon reviews every turn but never pauses Flash
+advisor:
+  enabled: true
+  syncBacklog: "off"
+
+# default is already Flash; a handoff to smol (Flash) gains nothing
+prewalk:
+  enabled: false
+
+# Gemini-only fallbacks on Cursor. Every chat chain is overridden: the global small-role chains point to Claude Haiku.
+# cursor/gemini-4-argon lists 2/10 until 2026-12-01, then 4/20.
+retry:
+  fallbackChains:
+    default: [cursor/gemini-3.8-flash:medium]
+    plan: [cursor/gemini-4-argon:high]
+    slow: [cursor/gemini-4-argon:high]
+    code-review: [cursor/gemini-4-argon:high]
+    pr-fixes: [cursor/gemini-3.8-flash:medium]
+    advisor: [cursor/gemini-4-argon:medium]
+    vision: [cursor/gemini-3.8-flash:low]
+    task: [cursor/gemini-3.8-flash:medium]
+    designer: [cursor/gemini-4-argon:medium]
+    smol: [cursor/gemini-3.8-flash:low]
+    fast: [cursor/gemini-3.8-flash:low]
+    tiny: [cursor/gemini-3.8-flash:low]
+    memory: [cursor/gemini-3.8-flash:low]
+    widget: [cursor/gemini-3.8-flash:low]
+    commit: [cursor/gemini-3.8-flash:low]

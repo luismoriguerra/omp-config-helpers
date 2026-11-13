@@ -1,0 +1,33 @@
+# Well balanced general purpose: Sonnet drives, Opus plans and handles hard reasoning,
+# Haiku does utility work, a GPT advisor reviews from a different model family without blocking.
+modelRoles:
+  default: github-copilot/claude-sonnet-5.5-1m:medium
+  slow: github-copilot/claude-opus-5.5-1m:high
+  plan: github-copilot/claude-opus-5.5-1m:high
+  smol: github-copilot/claude-haiku-5.5:low
+  fast: github-copilot/claude-haiku-5.5:low
+  code-review: github-copilot/claude-opus-5.5-1m:high
+  pr-fixes: "@default"
+  advisor: github-copilot/gpt-6.1-sol:medium
+
+defaultThinkingLevel: medium
+
+advisor:
+  enabled: true
+  # never pause the main agent waiting for review
+  syncBacklog: "off"
+
+# hand off from Sonnet to smol (Haiku :low) after the todo list exists and the first edit lands;
+# the rest of the session runs on Haiku. Use `omp-balanced --no-prewalk` to keep Sonnet throughout.
+prewalk:
+  enabled: true
+
+# Same-class fallbacks; advisor stays GPT so review remains independent of the Claude main model.
+# Maps deep-merge: only these chains replace the global ones.
+# List price: Cursor gpt-5.6-sol-1m 4/20 per 1M tokens vs Copilot gpt-6.1-sol 2/10 (2x).
+retry:
+  fallbackChains:
+    default: [cursor/claude-sonnet-5-5-1m:medium]
+    advisor: [cursor/gpt-5.6-sol-1m:medium]
+    code-review: [cursor/claude-opus-5-5-1m:high]
+    pr-fixes: [cursor/claude-sonnet-5-5-1m:medium]

@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Show what omp-sync would change in the repo (live -> repo drift). Read-only.
+# Exit 0 = in sync, 1 = drift.
+set -euo pipefail
+. "$(dirname "$0")/lib.sh"
+
+drift=0
+while read -r live dst; do
+  [ -e "$live" ] || { echo "missing live path: $live"; drift=1; continue; }
+  out="$(mirror "$live" "$REPO/$dst" -ni | grep -v '^\.[^ ]* ' || true)"
+  if [ -n "$out" ]; then
+    echo "## $dst"
+    echo "$out"
+    drift=1
+  fi
+done < <(manifest_entries)
+
+[ "$drift" = 0 ] && echo "in sync"
+exit "$drift"

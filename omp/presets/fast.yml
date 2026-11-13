@@ -1,0 +1,32 @@
+# Ultra fast code (GitHub Copilot + Cursor only).
+# Picks come from `omp bench` on 2026-11-04 (2 runs each, small sample; Cursor runs carried 12-20K input tokens vs ~100 for Copilot).
+# Overlay on top of ~/.omp/agent/config.yml: modelRoles deep-merges, other keys replace.
+modelRoles:
+  # Cursor's own coding model, fast mode: ~175-265 tok/s, ~1.2s TTFT, ~$0.02/run in bench
+  default: cursor/composer-2.5-fast:low
+  plan: cursor/composer-2.5-fast:medium
+  # lowest TTFT measured (0.7s), cheapest
+  smol: github-copilot/claude-haiku-5.5:low
+  fast: github-copilot/claude-haiku-5.5:low
+  # hard reasoning without leaving fast mode: fastest decode measured (~205-265 tok/s), but ~$0.18/run in bench
+  slow: cursor/claude-opus-5-5-fast:medium
+  code-review: "@default"
+  pr-fixes: "@default"
+  # unused here (advisor.enabled: false); pinned so no stale roster value shows
+  advisor: github-copilot/claude-haiku-5.5:low
+
+defaultThinkingLevel: low
+
+advisor:
+  enabled: false
+
+prewalk:
+  enabled: false
+
+# Fallbacks stay fast/low-effort and cross to Copilot so a Cursor outage is covered.
+# Maps deep-merge: only these three chains replace the global ones.
+retry:
+  fallbackChains:
+    default: [github-copilot/claude-sonnet-5.5:low]     # bench: ~75 tok/s, 1.1 s TTFT
+    plan: [github-copilot/claude-sonnet-5.5:medium]
+    slow: [github-copilot/claude-opus-5.5:medium]       # bench: ~70 tok/s, 0.8 s TTFT

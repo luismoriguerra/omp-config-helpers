@@ -1,0 +1,59 @@
+# OpenAI / GPT-only coding preset: balanced between fast and smart.
+# GPT models only, served through the allowed providers (GitHub Copilot primary, Cursor fallback).
+# Copilot GPT-6 tiers by list price (in/out per 1M, 2026-11-04): luna 0.1/0.5 < terra 1/5 < sol 2/10 < astra 10/50.
+# Cursor has no GPT-6, so fallbacks use the GPT-5.6 generation.
+# Overlay on top of ~/.omp/agent/config.yml: modelRoles and fallbackChains deep-merge, other keys replace.
+modelRoles:
+  default: github-copilot/gpt-6.1-sol:medium
+  plan: github-copilot/gpt-6-astra:high
+  slow: github-copilot/gpt-6-astra:high
+  code-review: github-copilot/gpt-6-astra:high
+  pr-fixes: "@default"
+  # different model (astra) from the sol main agent; same family, so less independent than a Claude reviewer.
+  # astra lists at 5x sol and the advisor runs every turn: the main cost driver of this preset.
+  advisor: github-copilot/gpt-6-astra:medium
+  vision: github-copilot/gpt-6.1-sol:low
+  task: github-copilot/gpt-6.1-sol:medium
+  designer: github-copilot/gpt-6.1-sol:medium
+  # global pins these to Claude Haiku; GPT-only here
+  smol: github-copilot/gpt-6-luna:low
+  fast: github-copilot/gpt-6-luna:low
+  tiny: github-copilot/gpt-6-luna:low
+  memory: github-copilot/gpt-6-luna:low
+  widget: github-copilot/gpt-6-luna:low
+  commit: github-copilot/gpt-6-luna:low
+
+defaultThinkingLevel: medium
+
+# No OpenAI image model in the Copilot/Cursor catalogs; the inherited image role resolves to Google.
+generate_image:
+  enabled: false
+
+advisor:
+  enabled: true
+  syncBacklog: "off"
+
+# sol keeps coding after the first edit (no luna handoff)
+prewalk:
+  enabled: false
+
+# GPT-only fallbacks on Cursor. Every chat chain is overridden: the global small-role chains point to Claude Haiku.
+retry:
+  fallbackChains:
+    default: [cursor/gpt-5.6-sol-1m:medium]
+    plan: [cursor/gpt-5.6-sol-1m:high]
+    slow: [cursor/gpt-5.6-sol-1m:high]
+    code-review: [cursor/gpt-5.6-sol-1m:high]
+    pr-fixes: [cursor/gpt-5.6-sol-1m:medium]
+    # a different GPT model from default's fallback, so a Copilot outage doesn't make the reviewer review itself
+    # (gpt-5.5-1m lists at 5/30 per 1M, vs 4/20 for gpt-5.6-sol-1m)
+    advisor: [cursor/gpt-5.5-1m:high]
+    vision: [cursor/gpt-5.6-sol-1m:low]
+    task: [cursor/gpt-5.6-sol-1m:medium]
+    designer: [cursor/gpt-5.6-sol-1m:medium]
+    smol: [cursor/gpt-5.6-luna-1m:low]
+    fast: [cursor/gpt-5.6-luna-1m:low]
+    tiny: [cursor/gpt-5.6-luna-1m:low]
+    memory: [cursor/gpt-5.6-luna-1m:low]
+    widget: [cursor/gpt-5.6-luna-1m:low]
+    commit: [cursor/gpt-5.6-luna-1m:low]

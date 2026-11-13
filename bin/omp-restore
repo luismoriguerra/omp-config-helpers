@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# Copy the repo version back onto the live paths (new machine, rollback, or edits made on GitHub).
+# Pulls first, previews every change, asks once, and copies each live path it is about to
+# change into ~/.omp-config-helpers-backups/<timestamp>/ first.
+# Usage: omp-restore [--no-pull] [-y]
+set -euo pipefail
+. "$(dirname "$0")/lib.sh"
+
+pull=1 yes=0
+for a in "$@"; do
+  case "$a" in
+    --no-pull) pull=0 ;;
+    -y|--yes) yes=1 ;;
+    *) echo "usage: omp-restore [--no-pull] [-y]" >&2; exit 2 ;;
+  esac
+done
+
+if [ "$pull" = 1 ] && has_remote; then
+  git -C "$REPO" pull -q --ff-only
+fi
+
+# Prints the itemized changes restoring one entry would make (empty = already matches).
+pending() { mirror "$REPO/$2" "$1" -ni | grep -v '^\.[^ ]* ' || true; }
+
+changes=0
+while read -r live dst; do
+  [ -e "$REPO/$dst" ] || { echo "skip (not in repo): $dst" >&2; continue; }
+  out="$(pending "$live" "$dst")"
+  if [ -n "$out" ]; then
+    echo "## $live"
+    echo "$out"
+    changes=1
+  fi
+done < <(manifest_entries)
+
+if [ "$changes" = 0 ]; then
+  echo "live files already match the repo"
+  exit 0
+fi
+
+if [ "$yes" = 0 ]; then
+  printf '\nApply these changes to the live files? [y/N] '
+  read -r answer
+  case "$answer" in y|Y) ;; *) echo "aborted, nothing changed"; exit 1 ;; esac
+fi
+
+backup="$HOME/.omp-config-helpers-backups/$(date +%Y%m%d-%H%M%S)"
+while read -r live dst; do
+  [ -e "$REPO/$dst" ] || continue
+  [ -n "$(pending "$live" "$dst")" ] || continue
+  if [ -e "$live" ]; then
+    mkdir -p "$backup/$(dirname "$dst")"
+    cp -Rp "${live%/}" "$backup/${dst%/}"
+  fi
+  mkdir -p "$(dirname "$live")"
+  mirror "$REPO/$dst" "$live"
+done < <(manifest_entries)
+
+if [ -d "$backup" ]; then
+  echo "restored; previous live versions saved in $backup"
+else
+  echo "restored; nothing existed to back up"
+fi

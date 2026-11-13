@@ -1,0 +1,39 @@
+# High intelligence code: Opus 5.5 as main model; Fable 5.2 for slow and planning work.
+# Fable 5.2 blocks high-risk cyber requests and Opus 4.8 answers them (Anthropic documents; Copilot behavior unverified); keep security work on default.
+# Independent advisor, no downgrade handoff. Slower and costlier per turn.
+modelRoles:
+  default: github-copilot/claude-opus-5.5-1m:xhigh
+  slow: github-copilot/claude-fable-5.2:xhigh
+  plan: github-copilot/claude-fable-5.2:xhigh
+  smol: github-copilot/claude-sonnet-5.5-1m:medium
+  fast: github-copilot/claude-sonnet-5.5-1m:low
+  code-review: github-copilot/gpt-6.1-sol:max
+  pr-fixes: github-copilot/gpt-6.1-sol:max
+  # different model family from the main agent, so the review is a real second opinion
+  advisor: github-copilot/gpt-6.1-sol:high
+
+defaultThinkingLevel: xhigh
+
+advisor:
+  enabled: true
+  # pause the main agent for up to 30 s when review falls 1 turn behind
+  syncBacklog: "1"
+
+prewalk:
+  enabled: false
+
+# Same-class fallbacks on Cursor, so a Copilot failure doesn't downgrade the preset.
+# Maps deep-merge: only these chains replace the global ones.
+# List prices per 1M tokens (in/out, catalog 2026-11-04): Opus 4/20 on both providers;
+# Cursor gpt-5.6-sol-1m 4/20 vs Copilot gpt-6.1-sol 2/10 (2x); Cursor Sonnet price not listed.
+retry:
+  fallbackChains:
+    default: [cursor/claude-opus-5-5-1m:xhigh]
+    slow: [cursor/claude-opus-5-5-1m:max]
+    plan: [cursor/claude-opus-5-5-1m:max]
+    # GPT family, so the fallback reviewer stays independent of the Opus main model
+    advisor: [cursor/gpt-5.6-sol-1m:high]
+    smol: [cursor/claude-sonnet-5-5-1m:medium]
+    fast: [cursor/claude-sonnet-5-5-1m:low]
+    code-review: [cursor/gpt-5.6-sol-1m:max]
+    pr-fixes: [cursor/gpt-5.6-sol-1m:max]

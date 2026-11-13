@@ -1,0 +1,2 @@
+# Reviewed false positives, one gitleaks fingerprint per line (printed by omp-sync when it blocks).
+# Add a line only after confirming the match is not a real credential.
