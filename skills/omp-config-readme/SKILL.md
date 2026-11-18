@@ -38,7 +38,7 @@ Answer questions about the omp model setup, and teach the concepts behind it.
 
 ## Quick answers
 
-- **"Which preset should I use?"** Answer from reference §3 "Which preset when". In short: `omp` by default, `omp-fast` for obvious small edits, `omp-smart` for hard or risky work, `omp-balanced` for planned mechanical changes, and `omp-anthropic` / `omp-openai` / `omp-gemini` to switch model family (second opinion, quota or outage).
+- **"Which preset should I use?"** Answer from reference §3 "Which preset when". In short: `omp` by default, `omp-fast` for near-`omp-smart` quality with turns faster than `omp-balanced` (cost no object), `omp-smart` for hard or risky work, `omp-balanced` for planned mechanical changes, and `omp-anthropic` / `omp-openai` / `omp-gemini` to switch model family (second opinion, quota or outage).
 - **"What model am I on?"** Inside a session, `/model` → Roles. From the shell, run `overview.sh`.
 - **"Why didn't my change apply?"** Running sessions don't reload presets, a project `.omp/config.yml` may override, or `omp config get` was used with `--config`, which it ignores. See reference §6.
 - **"Is my code staying within GitHub and Cursor?"** Not enforced while `disabledProviders` is empty. See reference §4 (Provider boundary), and run the audit.

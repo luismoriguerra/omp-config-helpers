@@ -1,34 +1,38 @@
-# Ultra fast code (GitHub Copilot + Cursor only).
-# Picks come from `omp bench` on 2026-11-04 (2 runs each, small sample; Cursor runs carried 12-20K input tokens vs ~100 for Copilot).
+# Fast with near-smart quality (GitHub Copilot + Cursor only): smart's Opus 5.5 served by Cursor's fast tier.
+# Goal: quality close to smart, wall-clock faster than balanced; cost is not a constraint.
+# Picks come from a real-task race on 2026-11-18 (2 runs each; spec-only task graded by 15 hidden tests; all configs passed 15/15):
+#   opus-5-5-fast :medium 28.1s mean | balanced (sonnet-5.5-1m :medium) 33.6s | smart (opus-5.5-1m :xhigh) 67.4s | composer-2.5 :low 35.9s.
+#   gpt-6.2-astra was slower than balanced in the agent loop (easy task 29.9s :medium vs 20.2s), so it is not used here.
 # Overlay on top of ~/.omp/agent/config.yml: modelRoles deep-merges, other keys replace.
 modelRoles:
-  # Cursor's own coding model (standard tier). omp bench 2026-11-13, 6 runs, 12K input:
-  # composer-2.5 :low 1.9s TTFT / 130 tok/s / $0.0066 per run vs composer-2.5-fast :low 2.0s (p95 7.0s) / 130 tok/s / $0.033;
-  # :medium 1.9s / 148 tok/s / $0.0063 vs 2.1s / 136 tok/s / $0.032. The -fast tier was not faster here and costs ~5x.
-  default: cursor/composer-2.5:low
-  plan: cursor/composer-2.5:medium
-  # lowest TTFT measured (0.7s), cheapest
-  smol: github-copilot/claude-haiku-5.5:low
-  fast: github-copilot/claude-haiku-5.5:low
-  # hard reasoning without leaving fast mode: fastest decode measured (~205-265 tok/s), but ~$0.18/run in bench
-  slow: cursor/claude-opus-5-5-fast:medium
+  # same model as smart's default at lower effort; fast-tier quality vs standard Opus not independently verified
+  default: cursor/claude-opus-5-5-fast:medium
+  plan: cursor/claude-opus-5-5-fast:high
+  slow: cursor/claude-opus-5-5-fast:high
+  # utility roles step up from Haiku, as in smart; omp bench 2026-11-18: 765ms TTFT / 169 tok/s
+  smol: github-copilot/claude-sonnet-5.5:low
+  fast: github-copilot/claude-sonnet-5.5:low
   code-review: "@default"
   pr-fixes: "@default"
-  # unused here (advisor.enabled: false); pinned so no stale roster value shows
-  advisor: github-copilot/claude-haiku-5.5:low
+  # different model family from the main agent, so the review is a real second opinion
+  advisor: github-copilot/gpt-6.2-sol:medium
 
-defaultThinkingLevel: low
+defaultThinkingLevel: medium
 
 advisor:
-  enabled: false
+  enabled: true
+  # never pause the main agent waiting for review (race timings above ran with an off-backlog advisor)
+  syncBacklog: "off"
 
+# no handoff to a smaller model: it would trade away the quality this preset is for
 prewalk:
   enabled: false
 
-# Fallbacks stay fast/low-effort and cross to Copilot so a Cursor outage is covered.
-# Maps deep-merge: only these three chains replace the global ones.
+# Same-model fallbacks on Copilot, so a Cursor outage keeps Opus quality (Copilot Opus speed in this preset not measured).
+# Maps deep-merge: only these chains replace the global ones.
 retry:
   fallbackChains:
-    default: [github-copilot/claude-sonnet-5.5:low]     # bench 2026-11-13: 1.2s TTFT / 163 tok/s; gemini-4-hydrogen :low 1.5s / 124 tok/s
-    plan: [github-copilot/claude-sonnet-5.5:medium]
-    slow: [github-copilot/claude-opus-5.5:medium]       # bench: ~70 tok/s, 0.8 s TTFT
+    default: [github-copilot/claude-opus-5.5:medium]
+    plan: [github-copilot/claude-opus-5.5:high]
+    slow: [github-copilot/claude-opus-5.5:high]
+    advisor: [cursor/gpt-5.6-sol-1m:medium]
