@@ -25,7 +25,8 @@ prewalk:
 # Same-class fallbacks on Cursor, so a Copilot failure doesn't downgrade the preset.
 # Maps deep-merge: only these chains replace the global ones.
 # List prices per 1M tokens (in/out, catalog 2026-11-04): Opus 4/20 on both providers;
-# Cursor gpt-5.6-sol-1m 4/20 vs Copilot gpt-6.1-sol 2/10 (2x); Cursor Sonnet price not listed.
+# code-review/pr-fixes: Cursor gpt-5.6-sol-1m 4/20 vs Copilot gpt-6.1-sol 2/10 (2x);
+# advisor: Cursor gpt-5.6-sol-1m 4/20 vs Copilot gpt-6.2-astra 8/40 (catalog 2026-11-18; fallback is half price); Cursor Sonnet price not listed.
 retry:
   fallbackChains:
     default: [cursor/claude-opus-5-5-1m:xhigh]

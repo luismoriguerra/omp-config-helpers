@@ -24,7 +24,7 @@ prewalk:
 
 # Same-class fallbacks; advisor stays GPT so review remains independent of the Claude main model.
 # Maps deep-merge: only these chains replace the global ones.
-# List price: Cursor gpt-5.6-sol-1m 4/20 per 1M tokens vs Copilot gpt-6.1-sol 2/10 (2x).
+# advisor fallback list price per 1M (in/out): Cursor gpt-5.6-sol-1m 4/20 (catalog 2026-11-04) vs Copilot gpt-6.2-sol 2/10 (2x).
 retry:
   fallbackChains:
     default: [cursor/claude-sonnet-5-5-1m:medium]
