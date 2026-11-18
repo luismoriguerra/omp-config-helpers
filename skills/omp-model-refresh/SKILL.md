@@ -54,7 +54,7 @@ Record for each candidate: provider IDs and exact selectors, context, max output
 | `fast` | throughput at low effort | Haiku-class or Cursor `-fast` |
 | `advisor` | strong reviewer from a **different family** than `default` | top GPT if `default` is Claude, and vice versa |
 | `code-review`, `pr-fixes` | strong reviewer | top tier |
-| fast preset `default` | highest measured tok/s and low TTFT at acceptable cost | Cursor `composer-*-fast` and similar |
+| fast preset `default` | quality close to smart, real-task wall clock faster than balanced's `default`; cost not a constraint | smart's model on a faster serving tier (Cursor `claude-opus-*-fast`); measure with a real-task race against balanced's and smart's `default`, not `omp bench` alone |
 
 Selector formats differ: Copilot uses dots (`claude-haiku-5.5`) and Cursor uses dashes (`claude-haiku-5-5`). `-1m` variants trade max output for context. Cursor `-fast` variants are premium-priced (`claude-opus-5-5-fast` measured about 8× `composer-2.5-fast` per run on 2026-11-04).
 
