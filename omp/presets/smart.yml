@@ -10,7 +10,7 @@ modelRoles:
   code-review: github-copilot/gpt-6.1-sol:max
   pr-fixes: github-copilot/gpt-6.1-sol:max
   # different model family from the main agent, so the review is a real second opinion
-  advisor: github-copilot/gpt-6.1-sol:high
+  advisor: github-copilot/gpt-6.2-astra:high
 
 defaultThinkingLevel: xhigh
 

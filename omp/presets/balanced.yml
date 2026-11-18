@@ -8,7 +8,7 @@ modelRoles:
   fast: github-copilot/claude-haiku-5.5:low
   code-review: github-copilot/claude-opus-5.5-1m:high
   pr-fixes: "@default"
-  advisor: github-copilot/gpt-6.1-sol:medium
+  advisor: github-copilot/gpt-6.2-sol:medium
 
 defaultThinkingLevel: medium
 
