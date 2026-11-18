@@ -1,8 +1,9 @@
 # Fast with near-smart quality (GitHub Copilot + Cursor only): smart's Opus 5.5 served by Cursor's fast tier.
-# Goal: quality close to smart, wall-clock faster than balanced; cost is not a constraint.
-# Picks come from a real-task race on 2026-11-18 (2 runs each; spec-only task graded by 15 hidden tests; all configs passed 15/15):
-#   opus-5-5-fast :medium 28.1s mean | balanced (sonnet-5.5-1m :medium) 33.6s | smart (opus-5.5-1m :xhigh) 67.4s | composer-2.5 :low 35.9s.
-#   gpt-6.2-astra was slower than balanced in the agent loop (easy task 29.9s :medium vs 20.2s), so it is not used here.
+# Goal: quality close to smart, with a default model faster than balanced's; cost is not a constraint.
+# Picks come from a real-task race of DEFAULT MODELS ONLY on 2026-11-18 (`--model` over the global config, not full presets;
+# 2 runs each; spec-only task graded by 15 hidden tests; all configs passed 15/15). Balanced's prewalk-to-Haiku was not exercised.
+#   opus-5-5-fast :medium 28.1s mean | balanced's default (sonnet-5.5-1m :medium) 33.6s | smart's default (opus-5.5-1m :xhigh) 67.4s | composer-2.5 :low 35.9s.
+#   gpt-6.2-astra was slower than balanced's default in the agent loop (easy task 29.9s :medium vs 20.2s), so it is not used here.
 # Overlay on top of ~/.omp/agent/config.yml: modelRoles deep-merges, other keys replace.
 modelRoles:
   # same model as smart's default at lower effort; fast-tier quality vs standard Opus not independently verified
