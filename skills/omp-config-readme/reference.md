@@ -67,6 +67,7 @@ Rules of thumb:
 - **Start with `omp`.** Escalate to `omp-smart` when a task resists two attempts or touches security, data or migrations. Use `omp-fast` when you want near-`omp-smart` quality with shorter turns and cost doesn't matter.
 - **Use `omp-balanced` when the plan is the hard part,** not the edits. For a task you already know is debugging, launch with `omp-balanced --no-prewalk`. If a running session has already handed off to Haiku and turns into debugging, `--no-prewalk` can't help, because it's a launch flag. Switch back yourself with `/switch` (this session only) or `/model`, and pick Sonnet or Opus.
 - **Use the vendor presets to switch model family:** for a second opinion on a stuck task, or around a quota or outage on one family. Every preset falls back to Cursor for its own roles.
+- **Treat `omp-gemini` as a slower second opinion, not a speed pick.** Hydrogen `:high` drives, Carbon `:high` plans and reviews, and a Neon advisor reviews every turn without pausing Hydrogen. Its default averaged 224 s on the §7 race task against 42 s for `omp-balanced`'s Sonnet.
 - **List prices may not match subscription billing.** Copilot and Cursor plans can charge differently.
 
 ## 4. Concepts
