@@ -1,7 +1,7 @@
-# Gemini-only coding preset: smart and balanced. Hydrogen drives, Carbon plans and reviews, Argon advises.
+# Gemini-only coding preset: smart and balanced. Hydrogen drives, Carbon plans and reviews, Neon advises.
 # Gemini models only, served through the allowed providers (GitHub Copilot primary, Cursor fallback).
-# Copilot list prices (in/out per 1M, 2026-11-13): gemini-4-hydrogen 1.5/7.5, gemini-4-carbon 2/10,
-# gemini-4-argon 2/10, gemini-3.8-flash 0.75/3.75. Google's Carbon price is introductory until 2026-11-30, then 4/20.
+# Copilot list prices (in/out per 1M, 2026-11-24): gemini-4-hydrogen 1.5/7.5, gemini-4-carbon 2/10,
+# gemini-4-neon 3/15. Google's Carbon price is introductory until 2026-11-30, then 4/20.
 # Overlay on top of ~/.omp/agent/config.yml: modelRoles and fallbackChains deep-merge, other keys replace.
 modelRoles:
   # Hydrogen is Google's everyday agentic model: Artificial Analysis index 51 at high vs 50 for Argon (Google, 2026-11-12).
@@ -13,9 +13,11 @@ modelRoles:
   slow: github-copilot/gemini-4-carbon:high
   code-review: github-copilot/gemini-4-carbon:high
   pr-fixes: "@default"
-  # a third model (Argon) next to the Hydrogen driver and Carbon planner; same family, so less independent than a GPT/Claude reviewer
-  advisor: github-copilot/gemini-4-argon-1m:medium
-  vision: github-copilot/gemini-3.8-flash-1m:low
+  # a third model (Neon) next to the Hydrogen driver and Carbon planner; same family, so less independent than a GPT/Claude reviewer.
+  # Replaces Argon, which leaves Copilot 2026-12-14. omp bench 2026-11-24: neon :medium 2.4s TTFT / 110 tok/s vs argon-1m 3.0s / 37 tok/s.
+  advisor: github-copilot/gemini-4-neon-1m:medium
+  # Hydrogen reads images; replaces 3.8 Flash (see the utility roles below)
+  vision: github-copilot/gemini-4-hydrogen:low
   # subagents: Google positions Hydrogen as the worker next to a Carbon coordinator; :medium was the fastest measured
   task: github-copilot/gemini-4-hydrogen:medium
   # Carbon: stronger front-end and visual design than Argon (Google, 2026-11-10)
@@ -23,11 +25,12 @@ modelRoles:
   # global pins these to Claude Haiku; Gemini-only here
   smol: github-copilot/gemini-4-hydrogen:low
   fast: github-copilot/gemini-4-hydrogen:low
-  # cheapest Gemini for background utility work
-  tiny: github-copilot/gemini-3.8-flash-1m:low
-  memory: github-copilot/gemini-3.8-flash-1m:low
-  widget: github-copilot/gemini-3.8-flash-1m:low
-  commit: github-copilot/gemini-3.8-flash-1m:low
+  # utility work: 3.8 Flash leaves Copilot 2026-12-14 and Copilot suggests Hydrogen.
+  # omp bench 2026-11-24: hydrogen :low 1.7s TTFT / 153 tok/s vs 3.8-flash-1m :low 2.2s / 80 tok/s, at 2x the list price.
+  tiny: github-copilot/gemini-4-hydrogen:low
+  memory: github-copilot/gemini-4-hydrogen:low
+  widget: github-copilot/gemini-4-hydrogen:low
+  commit: github-copilot/gemini-4-hydrogen:low
 
 defaultThinkingLevel: medium
 
@@ -35,7 +38,7 @@ defaultThinkingLevel: medium
 generate_image:
   enabled: false
 
-# Argon reviews every turn but never pauses Hydrogen
+# Neon reviews every turn but never pauses Hydrogen
 advisor:
   enabled: true
   syncBacklog: "off"
@@ -45,21 +48,23 @@ prewalk:
   enabled: false
 
 # Gemini-only fallbacks on Cursor. Every chat chain is overridden: the global small-role chains point to Claude Haiku.
-# Cursor lists gemini-4-carbon and gemini-4-argon at 2/10; cursor/gemini-4-hydrogen has no listed price (2026-11-13).
+# Cursor's base gemini-4-* selectors have 300K context (2026-11-24); 1M is on the -1m selectors at the same price.
+# Hydrogen and Neon chains use -1m to match their 1M Copilot primaries; Cursor Carbon's 300K covers Copilot Carbon's 264K.
+# Cursor list prices (in/out per 1M, 2026-11-24): hydrogen 1.5/7.5, carbon 2/10, neon 3/15.
 retry:
   fallbackChains:
-    default: [cursor/gemini-4-hydrogen:high]
+    default: [cursor/gemini-4-hydrogen-1m:high]
     plan: [cursor/gemini-4-carbon:high]
     slow: [cursor/gemini-4-carbon:high]
     code-review: [cursor/gemini-4-carbon:high]
-    pr-fixes: [cursor/gemini-4-hydrogen:high]
-    advisor: [cursor/gemini-4-argon:medium]
-    vision: [cursor/gemini-3.8-flash:low]
-    task: [cursor/gemini-4-hydrogen:medium]
+    pr-fixes: [cursor/gemini-4-hydrogen-1m:high]
+    advisor: [cursor/gemini-4-neon-1m:medium]
+    vision: [cursor/gemini-4-hydrogen-1m:low]
+    task: [cursor/gemini-4-hydrogen-1m:medium]
     designer: [cursor/gemini-4-carbon:medium]
-    smol: [cursor/gemini-4-hydrogen:low]
-    fast: [cursor/gemini-4-hydrogen:low]
-    tiny: [cursor/gemini-3.8-flash:low]
-    memory: [cursor/gemini-3.8-flash:low]
-    widget: [cursor/gemini-3.8-flash:low]
-    commit: [cursor/gemini-3.8-flash:low]
+    smol: [cursor/gemini-4-hydrogen-1m:low]
+    fast: [cursor/gemini-4-hydrogen-1m:low]
+    tiny: [cursor/gemini-4-hydrogen-1m:low]
+    memory: [cursor/gemini-4-hydrogen-1m:low]
+    widget: [cursor/gemini-4-hydrogen-1m:low]
+    commit: [cursor/gemini-4-hydrogen-1m:low]
