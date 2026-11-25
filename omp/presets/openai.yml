@@ -1,20 +1,23 @@
 # OpenAI / GPT-only coding preset: balanced between fast and smart.
 # GPT models only, served through the allowed providers (GitHub Copilot primary, Cursor fallback).
-# Copilot GPT-6 tiers by list price (in/out per 1M, 2026-11-04): luna 0.1/0.5 < terra 1/5 < sol 2/10 < astra 10/50.
+# Copilot GPT-6.x tiers by list price (in/out per 1M, 2026-11-25): gpt-6-luna 0.1/0.5 < gpt-6.1-terra 1/5 < gpt-6.2-sol 2/10 < gpt-6.2-astra 8/40.
 # Cursor has no GPT-6, so fallbacks use the GPT-5.6 generation.
 # Overlay on top of ~/.omp/agent/config.yml: modelRoles and fallbackChains deep-merge, other keys replace.
 modelRoles:
-  default: github-copilot/gpt-6.1-sol:medium
-  plan: github-copilot/gpt-6-astra:high
-  slow: github-copilot/gpt-6-astra:high
-  code-review: github-copilot/gpt-6-astra:high
+  # 2026-11-25 race of DEFAULT MODELS ONLY (--model over the global config; 2 runs each; spec-only task, 62 hidden tests):
+  #   gpt-6.2-sol :medium 62/62 twice, 80.7s mean | gpt-6.1-sol :medium 62/62 twice, 90.8s. Tests did not separate them; same list price.
+  default: github-copilot/gpt-6.2-sol:medium
+  # gpt-6.2-astra: 400K context (gpt-6-astra had 1.05M), same as default; omp bench 2026-11-25 :high 8.6s TTFT vs 10.7s for gpt-6-astra
+  plan: github-copilot/gpt-6.2-astra:high
+  slow: github-copilot/gpt-6.2-astra:high
+  code-review: github-copilot/gpt-6.2-astra:high
   pr-fixes: "@default"
   # different model (astra) from the sol main agent; same family, so less independent than a Claude reviewer.
-  # astra lists at 5x sol and the advisor runs every turn: the main cost driver of this preset.
-  advisor: github-copilot/gpt-6-astra:medium
-  vision: github-copilot/gpt-6.1-sol:low
-  task: github-copilot/gpt-6.1-sol:medium
-  designer: github-copilot/gpt-6.1-sol:medium
+  # gpt-6.2-astra lists at 4x gpt-6.2-sol and the advisor runs every turn: the main cost driver of this preset.
+  advisor: github-copilot/gpt-6.2-astra:medium
+  vision: github-copilot/gpt-6.2-sol:low
+  task: github-copilot/gpt-6.2-sol:medium
+  designer: github-copilot/gpt-6.2-sol:medium
   # global pins these to Claude Haiku; GPT-only here
   smol: github-copilot/gpt-6-luna:low
   fast: github-copilot/gpt-6-luna:low

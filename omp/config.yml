@@ -8,9 +8,9 @@ modelRoles:
   widget: github-copilot/claude-haiku-5.5:low
   commit: github-copilot/claude-haiku-5.5:low
   fast: github-copilot/claude-haiku-5.5:medium
-  advisor: github-copilot/gpt-6.1-sol:high
-  code-review: github-copilot/gpt-6-astra:max
-  pr-fixes: github-copilot/gpt-6-astra:max
+  advisor: github-copilot/gpt-6.2-sol:high
+  code-review: github-copilot/gpt-6.2-astra:max
+  pr-fixes: github-copilot/gpt-6.2-astra:max
   web: google-antigravity/gemini-3.5-flash-lite
 symbolPreset: unicode
 composer:
@@ -92,7 +92,7 @@ checkpoint:
   enabled: true
 display:
   hideToolActivity: false
-hideThinkingBlock: true
+hideThinkingBlock: false
 update:
   auto: true
 disabledProviders:
